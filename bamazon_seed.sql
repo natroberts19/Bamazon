@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS bamazon_DB;
-CREATE DATABASE bamazon_DB;
+DROP DATABASE IF EXISTS bamazon_db;
+CREATE DATABASE bamazon_db;
 
-USE bamazon_DB;
+USE bamazon_db;
 
 CREATE TABLE products(
   id INTEGER(11) unsigned NOT NULL auto_increment PRIMARY KEY,
