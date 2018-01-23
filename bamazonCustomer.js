@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "HeBumps@15",
+  password: "",
   database: "bamazon_db"
 });
 
@@ -40,7 +40,7 @@ function startTrans() {
     .prompt([
       // Prompt 1. Enter the item_id for the product you want to buy. [input]
       {
-        name: "item choice",
+        name: "item_choice",
         type: "input",
         message: "Enter the Item Id for the item you want to order."
       },
@@ -59,16 +59,29 @@ function startTrans() {
       }
     ])
     .then(function (answer) {
-        // Retrieve the information of the ordered item.
-        connection.query("SELECT * FROM products", function (err, results) {
-          if (err) throw err;
-          var orderedItem;
-          for (var i = 0; i < results.length; i++) {
-            if (results[i].item_id === answer.choice) {
-              orderedItem = results[i];
+      // Retrieve the information of the ordered item.
+      connection.query("SELECT * FROM products", function (err, results) {
+        if (err) throw err;
+        var orderedItem;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].item_id === answer.item_choice) {
+            orderedItem = results[i];
             console.log("Ordered Item: ", orderedItem);
-            }
           }
-        });
-      })
-    }
+        }
+      });
+      console.log("Quantity Ordered: ", answer.quantity);
+    })
+}
+
+// Run a query to determine if inventory is available. -- checkInv() function? or, just run a query here.
+// If inventory not available, display message "Sorry there is not enough in inventory to fill your order."
+// If inventory is available, run completeOrder().
+
+// Create a function to check and update remaining inventory in the products table. 
+// function checkInv() {}
+
+// Create a function to fill the customer's order and display a summary.
+// function completeOrder() {}
+// Update the inventory ("UPDATE products SET ? WHERE ?")
+// Fill the order, "Order Successfully submitted. You have purchased +quantity+ of +item+. Your order total is: +order_total+.
