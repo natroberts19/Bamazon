@@ -27,7 +27,7 @@ function displayItems() {
     // if (err) throw err;
     for (var i = 0; i < results.length; i++) {
       console.log("----------------------------------------------------------------------");
-      console.log("Item Id: " + results[i].item_id + " | Item Name: " + results[i].product_name + " | Item Price: " + results[i].price_cust_cost);
+      console.log("Item Id: " + results[i].item_id + " | Name: " + results[i].product_name + " | Price: " + results[i].price_cust_cost);
     }
     console.log("----------------------------------------------------------------------");
     startTrans();
@@ -62,7 +62,7 @@ function startTrans() {
           type: "input",
           message: "Enter your quantity.",
           // Add conditional for valid number entry.
-          validate: function (quant) {
+          validate: function (quant) {          
             if (isNaN(quant) === false && quant != "") {
               return true;
             }
@@ -77,15 +77,14 @@ function startTrans() {
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
             orderedItem = results[i];
-            console.log("Starting Inventory:", orderedItem.stock_quantity);
+            console.log("\nQuantity of", orderedItem.product_name, "available to order: ", orderedItem.stock_quantity);
             var newInv = orderedItem.stock_quantity - answer.quantity;
             // console.log("New Inventory:", newInv);
             var orderTotal = orderedItem.price_cust_cost * answer.quantity;
-            console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
+            // console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
             
             if (newInv < 0) {
-              
-              console.log("There is not enough of", orderedItem.product_name, "\nPlease order again.\n");
+              console.log("Inventory of", orderedItem.product_name, "is not sufficient. \nPlease order again.\n");
               newOrder();
 
             } else {
@@ -103,8 +102,7 @@ function startTrans() {
         
         ], function (error) {
                   if (error) throw err;
-              
-                  console.log("Your order was placed successfully. Thank you for ordering with Bamazon!");
+                  console.log("================================================================================\n You have ordered", answer.quantity, "of the", orderedItem.product_name, "for a total of $",orderTotal,".\n Your order was placed successfully. Thank you for ordering with Bamazon!\n================================================================================\n")
                   newOrder();
                 }
               );
@@ -129,7 +127,7 @@ function newOrder() {
         if (answer.new_order.toUpperCase() === 'YES') {
           displayItems();
         } else {
-          console.log("Thank You for shopping at Bamazon!")
+          console.log("==================================\nThank You for shopping at Bamazon!\n==================================");
         }
 });
 }
