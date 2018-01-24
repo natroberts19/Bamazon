@@ -79,23 +79,25 @@ function startTrans() {
             console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
             // 
           }
+            // Determine if there is enough quantity of the item ordered.
+          if (newInv >= 0) {
+            connection.query("UPDATE products SET ? WHERE ?", [{
+                stock_quantity: newInv
+              }],
+              function (error) {
+                if (error) throw err;
+                console.log("Order placed successfully!");
+                // displayItems();
+              }
+            );
+          } else {
+            console.log("There is not enough. Try again.");
+            // displayItems();
+  
+          }
         }
-        // Determine if there is enough quantity of the item ordered.
-        if (newInv >= 0) {
-          connection.query("UPDATE products SET ? WHERE ?", [{
-              stock_quantity: newInv
-            }],
-            function (error) {
-              if (error) throw err;
-              console.log("Order placed successfully!");
-              // displayItems();
-            }
-          );
-        } else {
-          console.log("There is not enough. Try again.");
-          // displayItems();
-
-        }
+      
+        
       });
   });
 }
