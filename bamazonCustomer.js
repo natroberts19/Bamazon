@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "",
+  password: "HeBumps@15",
   database: "bamazon_db"
 });
 
@@ -26,6 +26,7 @@ function displayItems() {
   connection.query("SELECT * FROM products", function (err, results) {
     // if (err) throw err;
     for (var i = 0; i < results.length; i++) {
+      console.log("----------------------------------------------------------------------");
       console.log("Item Id: " + results[i].item_id + " | Item Name: " + results[i].product_name + " | Item Price: " + results[i].price_cust_cost);
     }
     console.log("----------------------------------------------------------------------");
@@ -62,21 +63,32 @@ function startTrans() {
       // Retrieve the information of the ordered item.
       connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
+        
         var orderedItem;
+
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
-            orderedItem = results[i];
-            console.log("Ordered Item: ", orderedItem);
-          }
+            orderedItem = results[i].product_name;
+            console.log("Customer has ordered", answer.quantity, "of", orderedItem);
+            console.log("Is the quantity ordered", answer.quantity, " < ", results[i].stock_quantity, "?");
+            // checkInv();
+          } 
+          // else {
+          //   console.log("Sorry that item is not available, please choose another item.")
+          // }
         }
       });
-      console.log("Quantity Ordered: ", answer.quantity);
+      // console.log("Quantity Ordered: ", answer.quantity);
+      // console.log("Order Total: ", orderTotal);
     })
 }
 
-// Run a query to determine if inventory is available. -- checkInv() function? or, just run a query here.
-// If inventory not available, display message "Sorry there is not enough in inventory to fill your order."
-// If inventory is available, run completeOrder().
+// Create a function to confirm customer order and determine if inventory is available. 
+    // If customer order not correct, displayItems() and startTrans().
+    // If inventory not available, display message "Sorry there is not enough in inventory to fill your order." Then, displayItems(), startTrans().
+    // If inventory is available, run completeOrder().
+
+
 
 // Create a function to check and update remaining inventory in the products table. 
 // function checkInv() {}
