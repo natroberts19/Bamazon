@@ -70,15 +70,15 @@ function startTrans() {
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
             orderedItem = results[i];
-            console.log("Starting Inventory:", orderedItem.stock_quantity);
+            // console.log("Starting Inventory:", orderedItem.stock_quantity);
             var newInv = orderedItem.stock_quantity - answer.quantity;
-            console.log("New Inventory:", newInv);
+            // console.log("New Inventory:", newInv);
             var orderTotal = orderedItem.price_cust_cost * answer.quantity;
             console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
             
             if (newInv < 0) {
-              console.log("There is not enough of", orderedItem, "Please order again.");
-              // displayItems();
+              console.log("There is not enough of", orderedItem.product_name, "\nPlease order again.\n");
+              newOrder();
 
             } else {
             // Determine if there is enough quantity of the item ordered.
@@ -90,14 +90,14 @@ function startTrans() {
                 stock_quantity: newInv
             }, 
             {
-                id: orderedItem.id
+                item_id: orderedItem.item_id
             }
         
         ], function (error) {
                   if (error) throw err;
-                  
+              
                   console.log("Your order was placed successfully. Thank you for ordering with Bamazon!");
-                  // displayItems();
+                  newOrder();
                 }
               );
             }
@@ -105,4 +105,30 @@ function startTrans() {
         }
       });
   });
+}
+
+function newOrder() {
+  inquirer
+      .prompt([
+        // Prompt: Would you like to place another order? [yes/no]
+        {
+          name: "new_order",
+          type: "choice",
+          message: "Would you like to place a new order (y or n)?",
+          choices: ['y', 'n'],
+          validate: function (choices) {
+            if (choices.new_order === 'y' || 'n') {
+              return true;
+            }
+            return false;
+          }
+        },
+      ])
+      .then(function (answer) {
+        if (answer.new_order === 'y') {
+          displayItems();
+        } else {
+          console.log("Thank You for shopping at Bamazon!")
+        }
+})
 }
