@@ -36,57 +36,74 @@ function displayItems() {
 
 // Create a startTrans function to start the transaction with the customer.
 function startTrans() {
-  // Inquirer menu:
-  inquirer
-    .prompt([
-      // Prompt 1. Enter the item_id for the product you want to buy. [input]
-      {
-        name: "item_choice",
-        type: "input",
-        message: "Enter the Item Id for the item you want to order."
-      },
-      // Prompt 2. How many would you like to buy? [input]
-      {
-        name: "quantity",
-        type: "input",
-        message: "Enter the quantity of the item you want to order.",
-        // Add conditional for valid number entry.
-        validate: function (quant) {
-          if (isNaN(quant) === false) {
-            return true;
-          }
-          return false;
-        }
-      }
-    ])
-    .then(function (answer) {
-      // Retrieve the information of the ordered item.
-      connection.query("SELECT * FROM products", function (err, results) {
-        if (err) throw err;
-        
-        var orderedItem;
+  // query the database for all items being sold.
+  connection.query("SELECT * FROM products", function (err, results) {
+    if (err) throw err;
 
+    // Inquirer menu:
+    inquirer
+      .prompt([
+        // Prompt 1. Enter the item_id for the product you want to buy. [input]
+        {
+          name: "item_choice",
+          type: "input",
+          message: "Enter the Item Id for the item you want to order."
+        },
+        // Prompt 2. How many would you like to buy? [input]
+        {
+          name: "quantity",
+          type: "input",
+          message: "Enter the quantity of the item you want to order.",
+          // Add conditional for valid number entry.
+          validate: function (quant) {
+            if (isNaN(quant) === false) {
+              return true;
+            }
+            return false;
+          }
+        }
+      ])
+      .then(function (answer) {
+        // Retrieve the information of the ordered item.    
+        var orderedItem;
+        
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
-            orderedItem = results[i].product_name;
-            console.log("Customer has ordered", answer.quantity, "of", orderedItem);
-            console.log("Is the quantity ordered", answer.quantity, " < ", results[i].stock_quantity, "?");
-            // checkInv();
-          } 
-          // else {
-          //   console.log("Sorry that item is not available, please choose another item.")
-          // }
+            orderedItem = results[i];
+            console.log("Starting Inventory:", orderedItem.stock_quantity);
+            // 
+            var newInv = orderedItem.stock_quantity - answer.quantity;
+            console.log("New Inventory:", newInv);
+
+            var orderTotal = orderedItem.price_cust_cost * answer.quantity;
+            console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
+            // 
+          }
+        }
+        // Determine if there is enough quantity of the item ordered.
+        if (newInv >= 0) {
+          connection.query("UPDATE products SET ? WHERE ?", [{
+              stock_quantity: newInv
+            }],
+            function (error) {
+              if (error) throw err;
+              console.log("Order placed successfully!");
+              // displayItems();
+            }
+          );
+        } else {
+          console.log("There is not enough. Try again.");
+          // displayItems();
+
         }
       });
-      // console.log("Quantity Ordered: ", answer.quantity);
-      // console.log("Order Total: ", orderTotal);
-    })
+  });
 }
 
-// Create a function to confirm customer order and determine if inventory is available. 
-    // If customer order not correct, displayItems() and startTrans().
-    // If inventory not available, display message "Sorry there is not enough in inventory to fill your order." Then, displayItems(), startTrans().
-    // If inventory is available, run completeOrder().
+// Create a checkInv() function to confirm customer order and determine if inventory is available. 
+// If customer order not correct, displayItems() and startTrans().
+// If inventory not available, display message "Sorry there is not enough in inventory to fill your order." Then, displayItems(), startTrans().
+// If inventory is available, run completeOrder().
 
 
 
