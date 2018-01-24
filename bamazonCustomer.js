@@ -47,16 +47,23 @@ function startTrans() {
         {
           name: "item_choice",
           type: "input",
-          message: "Enter the Item Id for the item you want to order."
+          message: "Enter the Item Id for the item you want to order.",
+          // Add conditional for valid item id entry.
+          validate: function (itemId) {
+            if (isNaN(itemId) === false) {
+              return true;
+            }
+            return false;
+          }
         },
         // Prompt 2. How many would you like to buy? [input]
         {
           name: "quantity",
           type: "input",
-          message: "Enter the quantity of the item you want to order.",
+          message: "Enter your quantity.",
           // Add conditional for valid number entry.
           validate: function (quant) {
-            if (isNaN(quant) === false) {
+            if (isNaN(quant) === false && quant != "") {
               return true;
             }
             return false;
@@ -70,13 +77,14 @@ function startTrans() {
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
             orderedItem = results[i];
-            // console.log("Starting Inventory:", orderedItem.stock_quantity);
+            console.log("Starting Inventory:", orderedItem.stock_quantity);
             var newInv = orderedItem.stock_quantity - answer.quantity;
             // console.log("New Inventory:", newInv);
             var orderTotal = orderedItem.price_cust_cost * answer.quantity;
             console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
             
             if (newInv < 0) {
+              
               console.log("There is not enough of", orderedItem.product_name, "\nPlease order again.\n");
               newOrder();
 
@@ -109,26 +117,19 @@ function startTrans() {
 
 function newOrder() {
   inquirer
-      .prompt([
+      .prompt({
         // Prompt: Would you like to place another order? [yes/no]
-        {
           name: "new_order",
-          type: "choice",
-          message: "Would you like to place a new order (y or n)?",
-          choices: ['y', 'n'],
-          validate: function (choices) {
-            if (choices.new_order === 'y' || 'n') {
-              return true;
-            }
-            return false;
-          }
-        },
-      ])
+          type: "list",
+          message: "Would you like to place a new order? Choose YES or NO.",
+          choices: ['YES', 'NO']
+      })
       .then(function (answer) {
-        if (answer.new_order === 'y') {
+        // based on answer either start a new order or end session.
+        if (answer.new_order.toUpperCase() === 'YES') {
           displayItems();
         } else {
           console.log("Thank You for shopping at Bamazon!")
         }
-})
+});
 }
