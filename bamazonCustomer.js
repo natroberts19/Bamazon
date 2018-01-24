@@ -86,10 +86,14 @@ function startTrans() {
                 // UPDATE products
                 // SET stock_quantity = 15
                 // WHERE item_id = '1item1';
-              var updateQuery = "UPDATE products SET stock_quantity = newInv WHERE id = orderedItem";
-
-              connection.query(updateQuery,
-                function (error) {
+              connection.query ("UPDATE products SET ? WHERE ?", [{
+                stock_quantity: newInv
+            }, 
+            {
+                id: orderedItem.id
+            }
+        
+        ], function (error) {
                   if (error) throw err;
                   
                   console.log("Your order was placed successfully. Thank you for ordering with Bamazon!");
