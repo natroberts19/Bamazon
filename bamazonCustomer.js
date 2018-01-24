@@ -66,53 +66,39 @@ function startTrans() {
       .then(function (answer) {
         // Retrieve the information of the ordered item.    
         var orderedItem;
-        
+
         for (var i = 0; i < results.length; i++) {
           if (results[i].item_id === answer.item_choice) {
             orderedItem = results[i];
             console.log("Starting Inventory:", orderedItem.stock_quantity);
-            // 
             var newInv = orderedItem.stock_quantity - answer.quantity;
             console.log("New Inventory:", newInv);
-
             var orderTotal = orderedItem.price_cust_cost * answer.quantity;
             console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
-            // 
-          }
+            
+            if (newInv < 0) {
+              console.log("There is not enough of", orderedItem, "Please order again.");
+              // displayItems();
+
+            } else {
             // Determine if there is enough quantity of the item ordered.
-          if (newInv >= 0) {
-            connection.query("UPDATE products SET ? WHERE ?", [{
-                stock_quantity: newInv
-              }],
-              function (error) {
-                if (error) throw err;
-                console.log("Order placed successfully!");
-                // displayItems();
-              }
-            );
-          } else {
-            console.log("There is not enough. Try again.");
-            // displayItems();
-  
+            // This is the query I need, works in Workbench... 
+                // UPDATE products
+                // SET stock_quantity = 15
+                // WHERE item_id = '1item1';
+              var updateQuery = "UPDATE products SET stock_quantity = newInv WHERE id = orderedItem";
+
+              connection.query(updateQuery,
+                function (error) {
+                  if (error) throw err;
+                  
+                  console.log("Your order was placed successfully. Thank you for ordering with Bamazon!");
+                  // displayItems();
+                }
+              );
+            }
           }
         }
-      
-        
       });
   });
 }
-
-// Create a checkInv() function to confirm customer order and determine if inventory is available. 
-// If customer order not correct, displayItems() and startTrans().
-// If inventory not available, display message "Sorry there is not enough in inventory to fill your order." Then, displayItems(), startTrans().
-// If inventory is available, run completeOrder().
-
-
-
-// Create a function to check and update remaining inventory in the products table. 
-// function checkInv() {}
-
-// Create a function to fill the customer's order and display a summary.
-// function completeOrder() {}
-// Update the inventory ("UPDATE products SET ? WHERE ?")
-// Fill the order, "Order Successfully submitted. You have purchased +quantity+ of +item+. Your order total is: +order_total+.
