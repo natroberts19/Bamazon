@@ -1,13 +1,15 @@
 # Bamazon
 
 ## About
-Bamazon is a "Amazon-like" storefront that allows customers to order items that are stored in an SQL database.
+Bamazon is a "Amazon-like" storefront that allows a customer to order items that are stored in an SQL database. SQL queries are built into JavaScript functions to select items and update inventory in the bamazon_db database. Additional JavaScript functionality determines item availability and totals a customer's order. An Inquirer npm package menu guides the customer through the order process.
+
+To view a demo video of the Bamazon app, click here: https://natroberts19.tinytake.com/sf/MjI5Njg3Ml83MDUwMjc4 
 
 ### Commands
-Run the bamazonCustomer.js file using GitBash or the terminal. Use command 'bamazonCustomer.js.'
+Run the bamazonCustomer.js file using GitBash or the terminal. Use command 'node bamazonCustomer.js.'
 
 ### To Run the App
-1.	Download/save the bamazonCustomer.js folder from the Github repository.
+1.	Download/save the Bamazon folder from the Github repository.
 2.  To run the Bamazon app, open your terminal/bash window.
 3.  Navigate to the Bamazon folder in your terminal/bash window.
 4.  Install the package dependencies from the package.json file.
