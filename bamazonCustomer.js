@@ -50,7 +50,7 @@ function startTrans() {
           message: "Enter the Item Id for the item you want to order.",
           // Add conditional for valid item id entry.
           validate: function (itemId) {
-            if (isNaN(itemId) === false) {
+            if (isNaN(itemId) === false && itemId != "") {
               return true;
             }
             return false;
@@ -62,7 +62,7 @@ function startTrans() {
           type: "input",
           message: "Enter your quantity.",
           // Add conditional for valid number entry.
-          validate: function (quant) {          
+          validate: function (quant) {
             if (isNaN(quant) === false && quant != "") {
               return true;
             }
@@ -80,32 +80,32 @@ function startTrans() {
             console.log("\nQuantity of", orderedItem.product_name, "available to order: ", orderedItem.stock_quantity);
             var newInv = orderedItem.stock_quantity - answer.quantity;
             // console.log("New Inventory:", newInv);
-            var orderTotal = orderedItem.price_cust_cost * answer.quantity;
+            // var orderTotal will be used to display the total of the customer order with fixed decimal of 2 places.
+            var orderTotal = +((orderedItem.price_cust_cost * answer.quantity).toFixed(2));
             // console.log("You have ordered", answer.quantity, "of", orderedItem.product_name, "for a total of $", orderTotal);
-            
+
             if (newInv < 0) {
               console.log("Inventory of", orderedItem.product_name, "is not sufficient. \nPlease order again.\n");
               newOrder();
 
             } else {
-            // Determine if there is enough quantity of the item ordered.
-            // This is the query I need, works in Workbench... 
-                // UPDATE products
-                // SET stock_quantity = 15
-                // WHERE item_id = '1item1';
-              connection.query ("UPDATE products SET ? WHERE ?", [{
-                stock_quantity: newInv
-            }, 
-            {
-                item_id: orderedItem.item_id
-            }
-        
-        ], function (error) {
-                  if (error) throw err;
-                  console.log("================================================================================\n You have ordered", answer.quantity, "of the", orderedItem.product_name, "for a total of $",orderTotal,".\n Your order was placed successfully. Thank you for ordering with Bamazon!\n================================================================================\n")
-                  newOrder();
+              // Determine if there is enough quantity of the item ordered.
+              // This is the query I need, works in Workbench... 
+              // UPDATE products
+              // SET stock_quantity = 15
+              // WHERE item_id = '1item1';
+              connection.query("UPDATE products SET ? WHERE ?", [{
+                  stock_quantity: newInv
+                },
+                {
+                  item_id: orderedItem.item_id
                 }
-              );
+
+              ], function (error) {
+                if (error) throw err;
+                console.log("================================================================================\n You have ordered", answer.quantity, "of the", orderedItem.product_name, "for a total of $", orderTotal, "\n Your order was placed successfully. Thank you for ordering with Bamazon!\n================================================================================\n")
+                newOrder();
+              });
             }
           }
         }
@@ -115,19 +115,19 @@ function startTrans() {
 
 function newOrder() {
   inquirer
-      .prompt({
-        // Prompt: Would you like to place another order? [yes/no]
-          name: "new_order",
-          type: "list",
-          message: "Would you like to place a new order? Choose YES or NO.",
-          choices: ['YES', 'NO']
-      })
-      .then(function (answer) {
-        // based on answer either start a new order or end session.
-        if (answer.new_order.toUpperCase() === 'YES') {
-          displayItems();
-        } else {
-          console.log("==================================\nThank You for shopping at Bamazon!\n==================================");
-        }
-});
+    .prompt({
+      // Prompt: Would you like to place another order? [yes/no]
+      name: "new_order",
+      type: "list",
+      message: "Would you like to place a new order? Choose YES or NO.",
+      choices: ['YES', 'NO']
+    })
+    .then(function (answer) {
+      // based on answer either start a new order or end session.
+      if (answer.new_order.toUpperCase() === 'YES') {
+        displayItems();
+      } else {
+        console.log("==================================\nThank You for shopping at Bamazon!\n==================================");
+      }
+    });
 }
